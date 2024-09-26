@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword,signOut } from 'firebase/auth';
 import { auth, db } from "../firebaseConfig"; // Đảm bảo import db
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
@@ -12,9 +12,11 @@ export const AuthContextProvider = ({ children }) => {
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
+     // console.log('got user: ', user);
       if (user) {
         setIsAuthenticated(true);
         setUser(user);
+        updateUserData(user.uid);
       } else {
         setIsAuthenticated(false);
         setUser(null);
@@ -24,16 +26,30 @@ export const AuthContextProvider = ({ children }) => {
     return () => unsub();
   }, []);
 
+  const updateUserData = async (userId) => {
+    const docRef = doc(db,'users',userId);
+    const docSnap = await getDoc(docRef);
+
+    if(docSnap.exists()){
+      let data = docSnap.data();
+      setUser({...user,usename: data.username,profileUrl:data.profileUrl,userId:data.userId})
+
+    }
+  }
   const login = async (email, password) => {
     setLoading(true);
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
-      setUser(response.user);
-      setIsAuthenticated(true);
-      return { success: true, data: response.user };
+     // setUser(response.user);
+      //setIsAuthenticated(true);
+      return { success: true/*, data: response.user*/ };
     } catch (e) {
-      console.error(e);
-      return { success: false, msg: e.message };
+      /*console.error(e);
+      return { success: false, msg: e.message };*/
+      let msg = e.message;
+      if (msg.includes('(auth/invalid-email')) msg = 'Email không hợp lệ!!';
+      if (msg.includes('(auth/invalid-credential')) msg = 'Sai thông tin email hoặc mật khẩu!!';
+      return { success: false, msg};
     } finally {
       setLoading(false);
     }
@@ -41,11 +57,13 @@ export const AuthContextProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await auth.signOut();
-      setUser(null);
-      setIsAuthenticated(false);
+      await signOut(auth);
+      //setUser(null);
+     //setIsAuthenticated(false);
+     return{success:true}
     } catch (e) {
-      console.error(e);
+      //console.error(e);
+      return{success: false,msg: e.message, error:e};
     }
   };
 
@@ -60,8 +78,9 @@ export const AuthContextProvider = ({ children }) => {
       return { success: true, data: response.user };
     } catch (e) {
       let msg = e.message;
-      if(msg.include('(auth/invalid-email')) msg='Invalid email'
-      return { success: false, msg: e.message };
+      if (msg.includes('(auth/invalid-email')) msg = 'Email không hợp lệ!!';
+      if (msg.includes('(auth/email-already-in-use')) msg = 'Email đã tồn tại!!';      
+      return { success: false, msg};
     }
   };
 

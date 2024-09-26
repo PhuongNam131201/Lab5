@@ -2,6 +2,7 @@ import React,{ useEffect } from 'react';
 import { Slot, useSegments, useRouter } from "expo-router";
 import { AuthContextProvider, useAuth } from '../context/authContext';
 import "../global.css"
+import { MenuProvider } from 'react-native-popup-menu';
 const MainLayout = () => {
   const { isAuthenticated } = useAuth();
   const segments = useSegments();
@@ -24,8 +25,11 @@ const MainLayout = () => {
 
 export default function RootLayout() {
   return (
-    <AuthContextProvider>
-      <MainLayout />
-    </AuthContextProvider>
+    <MenuProvider>
+      <AuthContextProvider>
+        <MainLayout />
+      </AuthContextProvider>
+    </MenuProvider>
+
   );
 }

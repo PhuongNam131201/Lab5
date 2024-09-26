@@ -7,7 +7,7 @@ export default function CustomKeyboardView({ children }) {
   return (
     <KeyboardAvoidingView
       behavior={ios ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.select({ ios: 100, android: 100 })} // Điều chỉnh khoảng cách ở đây
+      keyboardVerticalOffset={Platform.select({ ios: 80, android: 80 })} // Điều chỉnh khoảng cách ở đây
       style={{ flex: 1 }}
     >
       <ScrollView

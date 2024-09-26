@@ -35,7 +35,7 @@ export default function SignUp() {
       <StatusBar barStyle="dark-content" />
       <View style={{ paddingTop: hp(8), paddingHorizontal: wp(5) }} className="flex-1 gap-12">
         <View style={{ alignItems: 'center' }}>
-          <Image style={{ height: hp(30), width: hp(50) }} source={require('../assets/images/avatar.png')} />
+          <Image style={{ height: hp(30), width: hp(50) }} source={require('../assets/images/a.png')} />
         </View>
         <View style={{ gap: 10 }}>
           <Text style={{ fontSize: hp(4), fontWeight: 'bold', letterSpacing: 0.5, textAlign: 'center', color: '#1F2937' }}>

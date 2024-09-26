@@ -5,9 +5,11 @@ import { Octicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import Loading from '../components/Loading';
 import CustomKeyboardView from '../components/CustomKeyboardView';
+import { useAuth } from '../context/authContext';
 export default function SignIn() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const {login} = useAuth();
   const emailRef = useRef("");
   const passwordRef = useRef("");
   const handleLogin = async()=>{
@@ -15,7 +17,13 @@ export default function SignIn() {
       Alert.alert('Đăng nhập', "Xin hãy nhập đầy đủ thông tin");
       return;
     }
-
+    setLoading(true);
+    const response = await login(emailRef.current,passwordRef.current);
+    setLoading(false);
+    console.log('Quá trình đăng nhập: ',response);
+    if(!response.success){
+      Alert.alert('Đăng nhập',response.msg)
+    }
     //đăng nhập thành công
 
   }
@@ -24,7 +32,7 @@ export default function SignIn() {
       <StatusBar barStyle="dark-content" />
       <View style={{ paddingTop: hp(8), paddingHorizontal: wp(5) }} className="flex-1 gap-12">
         <View style={{ alignItems: 'center' }}>
-          <Image style={{ height: hp(30), width: hp(50) }} source={require('../assets/images/avatar.png')} />
+          <Image style={{ height: hp(50), width: hp(50) }} source={require('../assets/images/logout.png')} />
         </View>
         <View style={{ gap: 10 }}>
           <Text style={{ fontSize: hp(4), fontWeight: 'bold', letterSpacing: 0.5, textAlign: 'center', color: '#1F2937' }}>
